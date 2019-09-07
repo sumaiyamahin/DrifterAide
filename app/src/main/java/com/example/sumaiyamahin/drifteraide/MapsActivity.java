@@ -14,6 +14,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +32,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private List<double[]> locations = new ArrayList<>();
+    private List<double[]> food = new ArrayList<>();
+    private List<double[]> shelter = new ArrayList<>();
     private LatLng loc;
 
     @Override
@@ -44,6 +49,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locations.add(l1);
         locations.add(l2);
         locations.add(l3);
+        double[] f1 = {40.744917, -73.987731};
+        double[] f2 = {40.746965, -73.984802};
+        food.add(f1);
+        food.add(f2);
+        double[] s1 = {40.746071, -73.984341};
+        double[] s2 = {40.746770, -73.993106};
+        shelter.add(s1);
+        shelter.add(s2);
+
     }
 
     @Override
@@ -54,8 +68,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(loc).title("NYC-Link"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15.0f));
         if(MainActivity.necessity == MainActivity.FOOD){
-            new RetrieveFeedTask().execute();
-
+            loc = new LatLng(food.get(0)[0], food.get(0)[1]);
+            mMap.addMarker(new MarkerOptions().position(loc).title("Isreal Food Bank"));
+            loc = new LatLng(food.get(1)[0], food.get(1)[1]);
+            mMap.addMarker(new MarkerOptions().position(loc).title("City Harvest"));
+            //new RetrieveFeedTask().execute();
+        }
+        if(MainActivity.necessity == MainActivity.SHELTER){
+            loc = new LatLng(shelter.get(0)[0], shelter.get(0)[1]);
+            mMap.addMarker(new MarkerOptions().position(loc).title("Christian Herald Association"));
+            loc = new LatLng(shelter.get(1)[0], shelter.get(1)[1]);
+            mMap.addMarker(new MarkerOptions().position(loc).title("Partnership for the Homeless"));
         }
     }
 
@@ -64,7 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected Void doInBackground(Void... voids) {
             String json = null;
-            String output = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyAWWU-xQZJ3pC3gkoJ2nMkCYZ63-xJ7zC8&input=food%20pantries&inputtype=textquery&locationbias=circle:50@"+loc;
+            String output = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?key=AIzaSyAWWU-xQZJ3pC3gkoJ2nMkCYZ63-xJ7zC8ec&input=food%20pantries&inputtype=textquery&locationbias=circle:50@"+loc;
             try {
                 URL url = new URL(output);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -82,9 +105,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 into.close();
                 json = new String(into.toByteArray(), "UTF-8");
-                System.out.println(json);
+                JSONObject obj = new JSONObject(json);
+                System.out.println(obj);
             } catch (IOException ex) {
                 ex.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
             return null;
         }
