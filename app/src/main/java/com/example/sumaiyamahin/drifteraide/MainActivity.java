@@ -7,36 +7,42 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int FOOD = 0;
+    public static final int SHELTER = 1;
+    public static int necessity;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button high_priority = findViewById(R.id.highPriority);
-        high_priority.setOnClickListener(new View.OnClickListener() {
+        Button food = findViewById(R.id.food);
+        food.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openHighPriority();
+                openFood();
             }
         });
 
-        Button low_priority = findViewById(R.id.lowPriority);
-        low_priority.setOnClickListener(new View.OnClickListener() {
+        Button shelter = findViewById(R.id.shelter);
+        shelter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openLowPriority();
+                openShelter();
             }
         });
     }
 
-    public void openHighPriority(){
+    public void openFood(){
+        necessity = FOOD;
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 
-    public void openLowPriority(){
-        Intent intent2 = new Intent(this, Main3Activity.class);
+    public void openShelter(){
+        necessity = SHELTER;
+        Intent intent2 = new Intent(this, MapsActivity.class);
         startActivity(intent2);
     }
 
